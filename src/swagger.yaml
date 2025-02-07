@@ -1,0 +1,239 @@
+openapi: 3.0.3
+info:
+  title: CaptainGoa API
+  description: >-
+    The CaptainGoa API provides authentication and authorization features.
+  version: 1.0.0
+  contact: {}
+servers:
+  - url: 'http://localhost:8080/mywallet/v1/auth'  # This should be a valid publicly accessible endpoint in production.
+    description: Local Server (replace with production URL if applicable)
+
+paths:
+  /users/register:
+    post:
+      tags:
+        - 🔐 Authentication
+      summary: Register user
+      description: >-
+        The API endpoint allows users to register or signup to create their
+        accounts.
+      operationId: registerUser
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: user.email@domain.com
+                password:
+                  type: string
+                  example: test@123
+                role:
+                  type: string
+                  example: ADMIN
+                username:
+                  type: string
+                  example: doejohn
+            example:
+              email: user.email@domain.com
+              password: test@123
+              role: ADMIN
+              username: doejohn
+      responses:
+        '201':
+          description: Register user
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      user:
+                        type: object
+                        properties:
+                          _id:
+                            type: string
+                            example: 649e795264e7dba29b726936
+                          email:
+                            type: string
+                            example: user.email@domain.com
+                          username:
+                            type: string
+                            example: doejohn
+                          role:
+                            type: string
+                            example: ADMIN
+                          createdAt:
+                            type: string
+                            example: '2023-06-30T06:42:26.163Z'
+                          updatedAt:
+                            type: string
+                            example: '2023-06-30T06:42:26.247Z'
+                  message:
+                    type: string
+                    example: 'User registered successfully, verification email sent.'
+                  success:
+                    type: boolean
+                    example: true
+        '400':
+          description: Bad request (validation failed)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'Invalid email format.'
+
+  /users/login:
+    post:
+      tags:
+        - 🔐 Authentication
+      summary: Login user
+      description: >-
+        The API endpoint allows users to log into the application securely and
+        also returns an access token.
+      operationId: loginUser
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                password:
+                  type: string
+                  example: test@123
+                username:
+                  type: string
+                  example: doejohn
+            example:
+              password: test@123
+              username: doejohn
+      responses:
+        '200':
+          description: Login user
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      accessToken:
+                        type: string
+                        example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDllNzk1MjY0ZTdkYmEyOWI3MjY5MzYiLCJlbWFpbCI6IndhamUuc2h1YmhhbTExMUBnbWFpbC5jb20iLCJ1c2VybmFtZSI6IndhamVzaHViaGFtIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNjg4MTA3NDY5LCJleHAiOjE2ODgxOTM4Njl9.40qfVrWi8x8fGBRB9JBVCVsdMYvlwzjIRpffz5z7DK4'
+                      refreshToken:
+                        type: string
+                        example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDllNzk1MjY0ZTdkYmEyOWI3MjY5MzYiLCJpYXQiOjE2ODgxMDc0NjksImV4cCI6MTY4ODk3MTQ2OX0.7or55Coj0K_UY4YpzYzkNR9hcOIhusxk9FRz7eMV8Ho'
+                      user:
+                        type: object
+                        properties:
+                          _id:
+                            type: string
+                            example: 649e795264e7dba29b726936
+                          email:
+                            type: string
+                            example: user.email@domain.com
+                          username:
+                            type: string
+                            example: doejohn
+                          role:
+                            type: string
+                            example: ADMIN
+                  message:
+                    type: string
+                    example: 'User logged in successfully'
+                  success:
+                    type: boolean
+                    example: true
+        '401':
+          description: Unauthorized (incorrect username/password)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'Invalid credentials.'
+
+  /users/logout:
+    post:
+      tags:
+        - 🔐 Authentication
+      summary: Logout user
+      description: >-
+        The API endpoint logs the user out and deletes the authentication
+        cookies.
+      operationId: logoutUser
+      responses:
+        '200':
+          description: Logout user
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'User logged out successfully.'
+                  success:
+                    type: boolean
+                    example: true
+
+  /users/refresh-token:
+    post:
+      tags:
+        - 🔐 Authentication
+      summary: Refresh token
+      description: >-
+        The API endpoint allows users to refresh their access tokens.
+      operationId: refreshToken
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                refreshToken:
+                  type: string
+                  example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDllNzk1MjY0ZTdkYmEyOWI3MjY5MzYiLCJpYXQiOjE2ODgxMDc0NjksImV4cCI6MTY4ODk3MTQ2OX0.7or55Coj0K_UY4YpzYzkNR9hcOIhusxk9FRz7eMV8Ho'
+            example:
+              refreshToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDllNzk1MjY0ZTdkYmEyOWI3MjY5MzYiLCJpYXQiOjE2ODgxMDc0NjksImV4cCI6MTY4ODk3MTQ2OX0.7or55Coj0K_UY4YpzYzkNR9hcOIhusxk9FRz7eMV8Ho'
+      responses:
+        '200':
+          description: Refresh access token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      accessToken:
+                        type: string
+                        example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDllNzk1MjY0ZTdkYmEyOWI3MjY5MzYiLCJlbWFpbCI6IndhamUuc2h1YmhhbTExMUBnbWFpbC5jb20iLCJ1c2VybmFtZSI6IndhamVzaHViaGFtIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNjg4MTA3NDY5LCJleHAiOjE2ODgxOTM4Njl9.40qfVrWi8x8fGBRB9JBVCVsdMYvlwzjIRpffz5z7DK4'
+                  message:
+                    type: string
+                    example: 'Access token refreshed successfully.'
+                  success:
+                    type: boolean
+                    example: true
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'Invalid refresh token.'
